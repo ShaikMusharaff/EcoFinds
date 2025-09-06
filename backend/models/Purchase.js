@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const cartSchema = new mongoose.Schema({
+const purchaseSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -9,7 +9,11 @@ const cartSchema = new mongoose.Schema({
   productIds: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'
-  }]
+  }],
+  purchasedAt: {
+    type: Date,
+    default: Date.now
+  }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Cart', cartSchema);
+module.exports = mongoose.model('Purchase', purchaseSchema);
