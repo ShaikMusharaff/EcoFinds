@@ -1,0 +1,43 @@
+/* src/components/Navbar.css */
+
+/* Navbar container */
+.navbar {
+  background: linear-gradient(90deg, #1e3a8a, #4f46e5);
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  border-radius: 0 0 15px 15px;
+  font-family: Arial, sans-serif;
+}
+
+/* Logo */
+.navbar .logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Links container */
+.navbar .nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+/* Individual links */
+.navbar .nav-link {
+  text-decoration: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* Hover effects */
+.navbar .nav-link:hover {
+  background-color: white;
+  color: #1e3a8a;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
