@@ -14,13 +14,22 @@ const userSchema = new mongoose.Schema(
     },
 
     password: {
-        type: String,
-        required: true
+        type: String
+    },
+
+    googleId: {
+        type: String
     },
 
     profileImage: {
         type: String,
         default: ""
+    },
+
+    authProvider: {
+        type: String,
+        enum: ["local", "google"],
+        default: "local"
     }
 },
 { timestamps: true }
