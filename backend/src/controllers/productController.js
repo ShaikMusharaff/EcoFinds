@@ -1,12 +1,14 @@
 const Product = require("../models/Product");
 
+
+// CREATE PRODUCT
 exports.createProduct = async (req, res) => {
 
     try {
 
         const product = await Product.create({
             ...req.body,
-            seller: req.user._id
+            seller: req.user?._id
         });
 
         res.status(201).json(product);
@@ -19,6 +21,8 @@ exports.createProduct = async (req, res) => {
     }
 };
 
+
+// GET ALL PRODUCTS
 exports.getProducts = async (req, res) => {
 
     try {
@@ -36,13 +40,61 @@ exports.getProducts = async (req, res) => {
     }
 };
 
+
+// GET SINGLE PRODUCT
 exports.getSingleProduct = async (req, res) => {
 
     try {
 
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id)
+        .populate("seller", "displayName");
 
         res.json(product);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+
+// UPDATE PRODUCT
+exports.updateProduct = async (req, res) => {
+
+    try {
+
+        const updatedProduct =
+        await Product.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {
+                new: true
+            }
+        );
+
+        res.json(updatedProduct);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+
+// DELETE PRODUCT
+exports.deleteProduct = async (req, res) => {
+
+    try {
+
+        await Product.findByIdAndDelete(req.params.id);
+
+        res.json({
+            message: "Product deleted successfully"
+        });
 
     } catch (error) {
 
