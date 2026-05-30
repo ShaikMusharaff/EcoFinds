@@ -1,47 +1,95 @@
-const express = require("express");
-const passport = require("passport");
+const User = require("../models/User");
 
-const router = express.Router();
-
-const {
-    signup,
-    login
-} = require("../controllers/authController");
+const bcrypt = require("bcryptjs");
 
 const generateToken = require("../utils/generateToken");
 
 
-// ================= NORMAL AUTH =================
+// ================= SIGNUP =================
 
-router.post("/signup", signup);
+exports.signup = async (req, res) => {
 
-router.post("/login", login);
+    try {
 
+        const {
+            displayName,
+            email,
+            password
+        } = req.body;
 
-// ================= GOOGLE AUTH =================
+        const userExists =
+        await User.findOne({ email });
 
-router.get(
-    "/google",
-    passport.authenticate("google", {
-        scope: ["profile", "email"]
-    })
-);
+        if (userExists) {
 
-router.get(
-    "/google/callback",
+            return res.status(400).json({
+                message: "User already exists"
+            });
+        }
 
-    passport.authenticate("google", {
-        session: false
-    }),
+        const hashedPassword =
+        await bcrypt.hash(password, 10);
 
-    (req, res) => {
+        const user = await User.create({
+            displayName,
+            email,
+            password: hashedPassword,
+            authProvider: "local"
+        });
 
-        const token = generateToken(req.user._id);
+        res.status(201).json({
+            _id: user._id,
+            displayName: user.displayName,
+            email: user.email,
+            token: generateToken(user._id)
+        });
 
-        res.redirect(
-            `http://localhost:5173/auth/success?token=${token}`
-        );
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
     }
-);
+};
 
-module.exports = router;
+
+// ================= LOGIN =================
+
+exports.login = async (req, res) => {
+
+    try {
+
+        const {
+            email,
+            password
+        } = req.body;
+
+        const user =
+        await User.findOne({ email });
+
+        if (
+            user &&
+            await bcrypt.compare(password, user.password)
+        ) {
+
+            res.json({
+                _id: user._id,
+                displayName: user.displayName,
+                email: user.email,
+                token: generateToken(user._id)
+            });
+
+        } else {
+
+            res.status(401).json({
+                message: "Invalid email or password"
+            });
+        }
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};

@@ -65,6 +65,27 @@ exports.updateProduct = async (req, res) => {
 
     try {
 
+        const product =
+        await Product.findById(req.params.id);
+
+        if (!product) {
+
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }
+
+        // OWNER CHECK
+        if (
+            product.seller.toString() !==
+            req.user._id.toString()
+        ) {
+
+            return res.status(403).json({
+                message: "Not authorized"
+            });
+        }
+
         const updatedProduct =
         await Product.findByIdAndUpdate(
             req.params.id,
@@ -85,10 +106,32 @@ exports.updateProduct = async (req, res) => {
 };
 
 
+
 // DELETE PRODUCT
 exports.deleteProduct = async (req, res) => {
 
     try {
+
+        const product =
+        await Product.findById(req.params.id);
+
+        if (!product) {
+
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }
+
+        // OWNER CHECK
+        if (
+            product.seller.toString() !==
+            req.user._id.toString()
+        ) {
+
+            return res.status(403).json({
+                message: "Not authorized"
+            });
+        }
 
         await Product.findByIdAndDelete(req.params.id);
 
