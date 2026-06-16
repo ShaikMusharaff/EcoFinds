@@ -1,95 +1,38 @@
-const User = require("../models/User");
+const express = require("express");
+const passport = require("passport");
 
-const bcrypt = require("bcryptjs");
+const router = express.Router();
+
+const {
+    signup,
+    login
+} = require("../controllers/authController");
 
 const generateToken = require("../utils/generateToken");
 
+router.post("/signup", signup);
+router.post("/login", login);
 
-// ================= SIGNUP =================
+router.get(
+    "/google",
+    passport.authenticate("google", {
+        scope: ["profile", "email"]
+    })
+);
 
-exports.signup = async (req, res) => {
+router.get(
+    "/google/callback",
+    passport.authenticate("google", {
+        session: false
+    }),
+    (req, res) => {
 
-    try {
+        const token = generateToken(req.user._id);
 
-        const {
-            displayName,
-            email,
-            password
-        } = req.body;
-
-        const userExists =
-        await User.findOne({ email });
-
-        if (userExists) {
-
-            return res.status(400).json({
-                message: "User already exists"
-            });
-        }
-
-        const hashedPassword =
-        await bcrypt.hash(password, 10);
-
-        const user = await User.create({
-            displayName,
-            email,
-            password: hashedPassword,
-            authProvider: "local"
-        });
-
-        res.status(201).json({
-            _id: user._id,
-            displayName: user.displayName,
-            email: user.email,
-            token: generateToken(user._id)
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            message: error.message
-        });
+        res.redirect(
+            `http://localhost:5173/auth/success?token=${token}`
+        );
     }
-};
+);
 
-
-// ================= LOGIN =================
-
-exports.login = async (req, res) => {
-
-    try {
-
-        const {
-            email,
-            password
-        } = req.body;
-
-        const user =
-        await User.findOne({ email });
-
-        if (
-            user &&
-            await bcrypt.compare(password, user.password)
-        ) {
-
-            res.json({
-                _id: user._id,
-                displayName: user.displayName,
-                email: user.email,
-                token: generateToken(user._id)
-            });
-
-        } else {
-
-            res.status(401).json({
-                message: "Invalid email or password"
-            });
-        }
-
-    } catch (error) {
-
-        res.status(500).json({
-            message: error.message
-        });
-    }
-};
+module.exports = router;

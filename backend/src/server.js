@@ -10,26 +10,47 @@ require("./config/passport");
 
 const app = express();
 
+
+// ================= MIDDLEWARE =================
+
 app.use(cors());
+
 app.use(express.json());
+
 app.use(passport.initialize());
 
+
+// ================= ROUTES =================
+
 app.use("/api/auth", require("./routes/authRoutes"));
+
+ app.use("/api/products", require("./routes/productRoutes"));
+
 app.get("/", (req, res) => {
     res.send("EcoFinds API Running");
 });
-app.use("/api/products", require("./routes/productRoutes"));
+
+
+// ================= DATABASE =================
 
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB Connected");
+    .connect(process.env.MONGO_URI)
+    .then(() => {
 
-    app.listen(process.env.PORT || 5000, () => {
-      console.log(`Server running on port ${process.env.PORT}`);
+        console.log("MongoDB Connected");
+
+        app.listen(process.env.PORT || 5000, () => {
+
+            console.log(
+                `Server running on port ${process.env.PORT || 5000}`
+            );
+
+        });
+
+    })
+    .catch((error) => {
+
+        console.log("MongoDB Connection Error:");
+        console.log(error);
+
     });
-  })
-  .catch((error) => {
-    console.log("MongoDB Connection Error:");
-    console.log(error);
-  });

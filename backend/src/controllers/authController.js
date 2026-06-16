@@ -19,7 +19,7 @@ const generateToken = (id) => {
 
 
 // REGISTER
-exports.register = async (req, res) => {
+exports.signup = async (req, res) => {
 
     try {
 
