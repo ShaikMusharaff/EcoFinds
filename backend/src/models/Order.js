@@ -8,25 +8,25 @@ const orderSchema = new mongoose.Schema(
         required: true
     },
 
-products: [
-    {
-        product: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Product",
-            required: true
-        },
+    products: [
+        {
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Product",
+                required: true
+            },
 
-        quantity: {
-            type: Number,
-            required: true
-        },
+            quantity: {
+                type: Number,
+                required: true
+            },
 
-        price: {
-            type: Number,
-            required: true
+            price: {
+                type: Number,
+                required: true
+            }
         }
-    }
-],
+    ],
 
     totalAmount: {
         type: Number,
@@ -37,6 +37,21 @@ products: [
         type: String,
         enum: ["pending", "completed"],
         default: "pending"
+    },
+
+    paymentMethod: {
+        type: String,
+        enum: ["Razorpay", "COD"],
+        default: "Razorpay"
+    },
+
+    razorpayOrderId: {
+        type: String
+    },
+
+    razorpayPaymentId: {
+        type: String,
+        unique: true
     },
 
     deliveryStatus: {
