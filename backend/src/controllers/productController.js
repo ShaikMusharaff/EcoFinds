@@ -26,19 +26,161 @@ exports.createProduct = async (req, res) => {
 exports.getProducts = async (req, res) => {
     try {
 
-        const products = await Product.find()
-            .populate("seller", "displayName email");
+        const {
+            search,
+            category,
+            condition,
+            seller,
+            available,
+            minPrice,
+            maxPrice,
+            sort,
+            page = 1,
+            limit = 10
+        } = req.query;
 
-        res.json(products);
+        let filter = {};
+
+        // Search across multiple fields
+        if (search) {
+            filter.$or = [
+                {
+                    title: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+                {
+                    description: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+                {
+                    brand: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+                {
+                    category: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+                {
+                    model: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+                {
+                    material: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+                {
+                    color: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                }
+            ];
+        }
+
+        // Category Filter
+        if (category) {
+            filter.category = category;
+        }
+
+        // Condition Filter
+        if (condition) {
+            filter.condition = condition;
+        }
+
+        // Seller Filter
+        if (seller) {
+            filter.seller = seller;
+        }
+
+        // Available Products Only
+        if (available === "true") {
+            filter.quantity = {
+                $gt: 0
+            };
+        }
+
+        // Price Filter
+        if (minPrice || maxPrice) {
+
+            filter.price = {};
+
+            if (minPrice) {
+                filter.price.$gte = Number(minPrice);
+            }
+
+            if (maxPrice) {
+                filter.price.$lte = Number(maxPrice);
+            }
+        }
+
+        // Sorting
+        let sortOption = {};
+
+        switch (sort) {
+
+            case "price_asc":
+                sortOption.price = 1;
+                break;
+
+            case "price_desc":
+                sortOption.price = -1;
+                break;
+
+            case "oldest":
+                sortOption.createdAt = 1;
+                break;
+
+            case "newest":
+            default:
+                sortOption.createdAt = -1;
+                break;
+        }
+
+        // Pagination
+        const currentPage = Number(page);
+        const pageSize = Number(limit);
+        const skip = (currentPage - 1) * pageSize;
+
+        // Total matching products
+        const totalProducts = await Product.countDocuments(filter);
+
+        // Fetch products
+        const products = await Product.find(filter)
+            .populate("seller", "displayName email")
+            .sort(sortOption)
+            .skip(skip)
+            .limit(pageSize);
+
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            totalProducts,
+            currentPage,
+            totalPages: Math.ceil(totalProducts / pageSize),
+            products
+        });
 
     } catch (error) {
 
         res.status(500).json({
+            success: false,
             message: error.message
         });
+
     }
 };
-
 
 // Get Single Product
 exports.getSingleProduct = async (req, res) => {
