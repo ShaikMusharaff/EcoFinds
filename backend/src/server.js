@@ -1,10 +1,12 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
 const cors = require("cors");
 const passport = require("passport");
+const uploadRoutes = require("./routes/uploadRoutes");
 
-dotenv.config();
 
 require("./config/passport");
 
@@ -23,9 +25,8 @@ app.use(passport.initialize());
 // ================= ROUTES =================
 
 app.use("/api/auth", require("./routes/authRoutes"));
-
  app.use("/api/products", require("./routes/productRoutes"));
-
+ app.use("/api/upload", uploadRoutes);
 app.get("/", (req, res) => {
     res.send("EcoFinds API Running");
 });

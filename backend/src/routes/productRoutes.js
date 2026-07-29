@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const upload = require("../middleware/multer");
 const protect = require("../middleware/authMiddleware");
 
 const {
@@ -19,7 +19,7 @@ router.get("/:id", getSingleProduct);
 
 
 // Protected Routes
-router.post("/", protect, createProduct);
+router.post("/", protect, upload.single("image"), createProduct);
 router.get("/my/listings", protect, getMyProducts);
 
 router.put("/:id", protect, updateProduct);

@@ -7,7 +7,8 @@ exports.createProduct = async (req, res) => {
 
         const product = await Product.create({
             ...req.body,
-            seller: req.user._id
+            seller: req.user._id,
+            images: req.file ? [req.file.path] : []
         });
 
         res.status(201).json(product);
