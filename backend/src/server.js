@@ -7,7 +7,7 @@ const cors = require("cors");
 const passport = require("passport");
 const uploadRoutes = require("./routes/uploadRoutes");
 const cartRoutes = require("./routes/cartRoutes");
-
+const orderRoutes = require("./routes/orderRoutes");
 require("./config/passport");
 
 const app = express();
@@ -28,6 +28,7 @@ app.use("/api/auth", require("./routes/authRoutes"));
  app.use("/api/products", require("./routes/productRoutes"));
  app.use("/api/upload", uploadRoutes);
  app.use("/api/cart", cartRoutes);
+ app.use("/api/orders", orderRoutes);
 app.get("/", (req, res) => {
     
     res.send("EcoFinds API Running");
