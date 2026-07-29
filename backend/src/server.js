@@ -8,6 +8,8 @@ const passport = require("passport");
 const uploadRoutes = require("./routes/uploadRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const wishlistRoutes = require("./routes/wishlistRoutes");
 require("./config/passport");
 
 const app = express();
@@ -29,6 +31,8 @@ app.use("/api/auth", require("./routes/authRoutes"));
  app.use("/api/upload", uploadRoutes);
  app.use("/api/cart", cartRoutes);
  app.use("/api/orders", orderRoutes);
+ app.use("/api/reviews", reviewRoutes);
+ app.use("/api/wishlist", wishlistRoutes);
 app.get("/", (req, res) => {
     
     res.send("EcoFinds API Running");

@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
 {
-seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true
-},
+    seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
 
     title: String,
 
@@ -40,7 +40,17 @@ seller: {
 
     workingCondition: String,
 
-    images: [String]
+    images: [String],
+
+    averageRating: {
+        type: Number,
+        default: 0
+    },
+
+    numReviews: {
+        type: Number,
+        default: 0
+    }
 },
 { timestamps: true }
 );
